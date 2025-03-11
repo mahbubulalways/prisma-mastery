@@ -98,7 +98,7 @@ const main = async () => {
   const skip = (pageNo - 1) * 8;
   const count = (await prisma.post.findMany()).length;
   const pages = Math.ceil(count / take);
-  console.log(pages);
+  //   console.log(pages);
   const offsetPagination = await prisma.post.findMany({
     skip: skip,
     take: take,
@@ -110,6 +110,6 @@ const main = async () => {
     take: take,
     cursor: { id: 17 },
   });
-  console.log(cursorBasedPagination);
+  //   console.log(cursorBasedPagination);
 };
 main();

@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,15 +7,81 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Post {
-  id Int @id @default(autoincrement())
-  title String
-  content String
-  published Boolean @default(false)
-  author String  
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String
+  published  Boolean  @default(false)
+  author     String
   created_at DateTime @default(now())
-  updated_at DateTime  @updatedAt
+  updated_at DateTime @updatedAt
 
   @@map("posts") //update table name
+}
+
+// +++++++++++++++++++ Project STARTED From Here ++++++++++++++++
+
+// SECOND POST MODEL
+model PostTwo {
+  id           Int            @id @default(autoincrement())
+  title        String
+  content      String
+  published    Boolean        @default(false)
+  authorId     Int
+  author       User           @relation(fields: [authorId], references: [id])
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  postCategory postCategory[]
+
+  @@map("posts_2")
+}
+
+// USER SCHEMA MODEL
+model User {
+  id       Int       @id @default(autoincrement())
+  username String    @unique
+  email    String    @unique
+  role     UserRole  @default(user)
+  profile  Profile? // One to one relation with  user and profile 
+  postTwo  PostTwo[] // one to many relation with user and post
+
+  @@map("users")
+}
+
+enum UserRole {
+  user
+  admin
+}
+
+// PROFILE SCHEMA MODEL
+
+model Profile {
+  id     Int     @id @default(autoincrement())
+  bio    String?
+  userId Int     @unique
+  user   User    @relation(fields: [userId], references: [id])
+
+  @@map("profiles")
+}
+
+// CATEGORY MODEL SCHEMA
+
+model Category {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique
+  postCategory postCategory[]
+
+  @@map("categories")
+}
+
+// MANY TO MANY RELATION WITH CATEGORY AND POST
+
+model postCategory {
+  postId     Int
+  post       PostTwo  @relation(fields: [postId], references: [id])
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@id([postId, categoryId])
+  @@map("post_categories")
 }
